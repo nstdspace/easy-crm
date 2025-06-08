@@ -21,9 +21,17 @@ jobs:
         with:
           node-version: 22
 
+      - name: Npm install
+        working-directory: easy-crm-frontend
+        run: npm install
+
+      - name: Typecheck App
+        working-directory: easy-crm-frontend
+        run: npm run type-check
+
       - name: Build Vue App
         working-directory: easy-crm-frontend
-        run: npm install && npm run build
+        run: npm run build
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
