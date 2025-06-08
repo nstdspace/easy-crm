@@ -40,3 +40,5 @@ out/
 .kotlin
 
 postgres-data
+
+application-local.yml
