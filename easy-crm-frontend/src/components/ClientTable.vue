@@ -10,8 +10,15 @@ import {
 } from '@tanstack/vue-table'
 import { computed, ref } from 'vue'
 import BaseHeader from '@/components/BaseHeader.vue'
+import { useKeycloak } from '@dsb-norge/vue-keycloak-js'
 
-fetch(import.meta.env.VITE_API_BASE_URL + '/clients').then((result) => console.log(result))
+const kc = useKeycloak()
+
+fetch(import.meta.env.VITE_API_BASE_URL + '/clients', {
+  headers: {
+    Authorization: `Bearer ${kc.token}`,
+  },
+}).then((result) => console.log(result))
 
 export interface Client {
   id: string
