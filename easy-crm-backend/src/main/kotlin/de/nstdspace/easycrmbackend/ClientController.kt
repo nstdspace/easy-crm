@@ -11,3 +11,4 @@ class ClientController(private val clientService: ClientService) {
     fun getClients(@AuthenticationPrincipal jwt: Jwt): List<ClientDto> =
         clientService.getClients(jwt.userId)
 }
+
