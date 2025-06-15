@@ -1,0 +1,17 @@
+name: Build Vue
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'easy-crm-backend/**'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4

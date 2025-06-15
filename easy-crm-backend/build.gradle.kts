@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     kotlin("jvm") version "2.1.21"
     kotlin("plugin.spring") version "2.1.21"
@@ -13,6 +15,10 @@ plugins {
 group = "de.nstdspace"
 version = "0.0.1-SNAPSHOT"
 
+tasks.withType<BootJar> {
+    archiveFileName.set("EasyCrmBackend.jar")
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -21,6 +27,7 @@ java {
 
 configure<com.diffplug.gradle.spotless.SpotlessExtension> {
     kotlin {
+        targetExclude("build/**")
         ktfmt().kotlinlangStyle()
     }
     kotlinGradle {

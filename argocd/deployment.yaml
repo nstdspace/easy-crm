@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easy-crm
+  labels:
+    app: easy-crm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easy-crm
+  template:
+    metadata:
+      labels:
+        app: easy-crm
+    spec:
+      containers:
+        - name: easy-crm
+          image: ghcr.io/nstdspace/easy-crm:master
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+      imagePullSecrets:
+        - name: dockerconfig-ghcr-io
