@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'easy-crm-backend/**'
+      - '.github/workflows/deploy-backend.yml'
 
 env:
   REGISTRY: ghcr.io
