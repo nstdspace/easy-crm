@@ -1,4 +1,4 @@
-name: Build Vue
+name: Build and deploy Backend
 
 on:
   push:
