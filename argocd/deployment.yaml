@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: easy-crm
+  namespace: default
   labels:
     app: easy-crm
 spec:
