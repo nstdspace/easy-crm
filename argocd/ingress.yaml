@@ -21,3 +21,4 @@ spec:
   tls:
     - hosts:
         - easycrm.maksim-rotmann.dynv6.net
+      secretName: easycrm-tls
