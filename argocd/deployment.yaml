@@ -33,6 +33,8 @@ spec:
                   key: SPRING_DATASOURCE_PASSWORD
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://malinka:5440/easy_crm_data
+            - name: CORS_ALLOWED_ORIGINS_0
+              value: "https://nstdspace.github.io"
           imagePullPolicy: Always
       imagePullSecrets:
         - name: dockerconfig-ghcr-io
