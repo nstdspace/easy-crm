@@ -1,4 +1,5 @@
 resources:
+  - easycrm-db-secret.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
