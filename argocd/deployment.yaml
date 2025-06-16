@@ -26,6 +26,11 @@ spec:
                 secretKeyRef:
                   name: easycrm-db-secret
                   key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: easycrm-db-secret
+                  key: SPRING_DATASOURCE_PASSWORD
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://malinka:5440/easy_crm_data
           imagePullPolicy: Always
