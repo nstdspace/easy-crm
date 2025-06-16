@@ -26,6 +26,8 @@ spec:
                 secretKeyRef:
                   name: easycrm-db-secret
                   key: password
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://malinka:5440/easy_crm_data
           imagePullPolicy: Always
       imagePullSecrets:
         - name: dockerconfig-ghcr-io
