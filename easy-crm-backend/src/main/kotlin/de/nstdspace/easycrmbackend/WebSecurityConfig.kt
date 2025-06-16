@@ -1,5 +1,6 @@
 package de.nstdspace.easycrmbackend
 
+import logger
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,6 +24,7 @@ data class CorsConfig(
 class WebSecurityConfig {
     @Bean
     fun corsConfigurationSource(config: CorsConfig): CorsConfigurationSource {
+        logger.info { "Configuring CORS for allowed origins: ${config.allowedOrigins}" }
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = config.allowedOrigins
         configuration.allowedMethods = listOf("GET", "POST")
