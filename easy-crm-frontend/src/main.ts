@@ -5,7 +5,7 @@ import { createPinia } from 'pinia'
 import VueKeycloak from '@dsb-norge/vue-keycloak-js'
 
 import App from './App.vue'
-import router from './router'
+import { createAppRouter } from '@/router'
 
 const app = createApp(App)
 
@@ -21,7 +21,9 @@ app.use(VueKeycloak, {
     onLoad: 'login-required',
     checkLoginIframe: false,
   },
-  onReady: () => app.mount('#app'),
+  onReady: () => {
+    app.use(createPinia())
+    app.use(createAppRouter())
+    app.mount('#app')
+  },
 })
-app.use(createPinia())
-app.use(router)
