@@ -18,7 +18,9 @@ fetch(import.meta.env.VITE_API_BASE_URL + '/clients', {
   headers: {
     Authorization: `Bearer ${kc.token}`,
   },
-}).then((result) => console.log(result))
+})
+  .then((result) => result.json())
+  .then((result: Client[]) => (clients.value = result))
 
 export interface Client {
   id: string
@@ -122,7 +124,7 @@ const visibleClientsCount = computed(() => table.getRowModel().rows.length)
 <template>
   <div class="flex h-full flex-col">
     <BaseHeader :visible-client-count="visibleClientsCount" />
-    <div class="flex h-full flex-col gap-7 p-5">
+    <div class="flex min-h-0 grow flex-col gap-7 p-5">
       <div class="min-h-0 grow overflow-auto border border-slate-500">
         <table class="w-full table-fixed">
           <thead>
