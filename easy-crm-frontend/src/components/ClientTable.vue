@@ -55,10 +55,7 @@ const columns = [
   columnHelper.accessor('zip', {
     header: 'PLZ',
     enableColumnFilter: true,
-    filterFn: (row, id, filterRegex: RegExp) => {
-      console.log(filterRegex)
-      return filterRegex.test(row.getValue(id)!.toString())
-    },
+    filterFn: (row, id, filterRegex: RegExp) => filterRegex.test(row.getValue(id)!.toString()),
   }),
   columnHelper.accessor('email', {
     header: 'E-Mail',
@@ -105,8 +102,8 @@ const mails = computed(() =>
 )
 
 const updateFilter = (event: Event) => {
-  console.log((event.target as HTMLInputElement).checked)
-  setPLZFilter(/^[456].*/g)
+  const isChecked = (event.target as HTMLInputElement).checked
+  setPLZFilter(isChecked ? /^[456].*/g : undefined)
 }
 
 const mailTo = computed(() => `mailto:mail@bdo-agentur.de?bcc=${mails.value}`)
@@ -114,9 +111,7 @@ const mailTo = computed(() => `mailto:mail@bdo-agentur.de?bcc=${mails.value}`)
 const openMail = () => window.open(mailTo.value)
 const copyMails = () => navigator.clipboard.writeText(mails.value)
 
-const setPLZFilter = (filter: RegExp) => {
-  table.getColumn('zip')?.setFilterValue(filter)
-}
+const setPLZFilter = (filter: RegExp | undefined) => table.getColumn('zip')?.setFilterValue(filter)
 
 const visibleClientsCount = computed(() => table.getRowModel().rows.length)
 </script>
