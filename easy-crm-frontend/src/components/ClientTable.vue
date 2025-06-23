@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import {
-  createColumnHelper,
-  FlexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  type SortingState,
-  useVueTable,
-} from '@tanstack/vue-table'
 import { computed, ref } from 'vue'
 import BaseHeader from '@/components/BaseHeader.vue'
 import { useKeycloak } from '@dsb-norge/vue-keycloak-js'
@@ -33,77 +24,42 @@ export interface Client {
   zip: string
 }
 
-const columnHelper = createColumnHelper<Client>()
+interface Column {
+  key: keyof Client
+  label: string
+}
 
-const columns = [
-  columnHelper.accessor('firstName', {
-    header: 'Vorname',
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('lastName', {
-    header: 'Nachname',
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('company', {
-    header: 'Firma',
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('city', {
-    header: 'Stadt',
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('zip', {
-    header: 'PLZ',
-    enableColumnFilter: true,
-    filterFn: (row, id, filterRegex: RegExp) => filterRegex.test(row.getValue(id)!.toString()),
-  }),
-  columnHelper.accessor('email', {
-    header: 'E-Mail',
-    enableColumnFilter: false,
-  }),
+const columns: Column[] = [
+  { key: 'firstName', label: 'Vorname' },
+  { key: 'lastName', label: 'Nachname' },
+  { key: 'company', label: 'Firma' },
+  { key: 'city', label: 'Stadt' },
+  { key: 'zip', label: 'PLZ' },
+  { key: 'email', label: 'E-Mail' },
 ]
 
 const clients = ref<Client[]>([])
-const sorting = ref<SortingState>([])
 
-const table = useVueTable({
-  get data() {
-    return clients.value
-  },
-  columns,
-  state: {
-    get sorting() {
-      return sorting.value
-    },
-  },
-  onSortingChange: (updaterOrValue) => {
-    sorting.value =
-      typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
-  },
-  getCoreRowModel: getCoreRowModel(),
-  getSortedRowModel: getSortedRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
-  debugTable: true,
-  initialState: {
-    sorting: [
-      {
-        id: 'zip',
-        desc: false,
-      },
-    ],
-  },
+const sortSource = ref<{ key: keyof Client; direction: 'asc' | 'desc' }>({
+  key: 'zip',
+  direction: 'asc',
 })
+const sorting = ref<(c1: Client, c2: Client) => number>((c1, c2) => c1.zip.localeCompare(c2.zip))
 
-const mails = computed(() =>
-  table
-    .getFilteredRowModel()
-    .rows.map((row) => row.getValue('email'))
-    .join(','),
+const filter = ref<(client: Client) => boolean>(() => true)
+
+const sortedFilteredClients = computed<Client[]>(() =>
+  clients.value.filter(filter.value).toSorted(sorting.value),
 )
+
+const toggleSort = (key: keyof Client) => {}
+
+const mails = computed(() => sortedFilteredClients.value.map((client) => client.email).join(','))
 
 const updateFilter = (event: Event) => {
   const isChecked = (event.target as HTMLInputElement).checked
-  setPLZFilter(isChecked ? /^[456].*/g : undefined)
+
+  filter.value = isChecked ? (client) => /^[456].*/g.test(client.zip) : () => true
 }
 
 const mailTo = computed(() => `mailto:mail@bdo-agentur.de?bcc=${mails.value}`)
@@ -111,9 +67,7 @@ const mailTo = computed(() => `mailto:mail@bdo-agentur.de?bcc=${mails.value}`)
 const openMail = () => window.open(mailTo.value)
 const copyMails = () => navigator.clipboard.writeText(mails.value)
 
-const setPLZFilter = (filter: RegExp | undefined) => table.getColumn('zip')?.setFilterValue(filter)
-
-const visibleClientsCount = computed(() => table.getRowModel().rows.length)
+const visibleClientsCount = computed(() => sortedFilteredClients.value.length)
 </script>
 
 <template>
@@ -123,26 +77,25 @@ const visibleClientsCount = computed(() => table.getRowModel().rows.length)
       <div class="min-h-0 grow overflow-auto border border-slate-500">
         <table class="w-full table-fixed">
           <thead>
-            <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+            <tr>
               <th
                 class="sticky top-0 bg-gray-300 p-2"
-                v-for="header in headerGroup.headers"
-                :key="header.id"
-                :colSpan="header.colSpan"
-                :class="header.column.getCanSort() ? 'cursor-pointer select-none' : ''"
-                @click="header.column.getToggleSortingHandler()?.($event)"
+                v-for="column in columns"
+                :key="column.key"
+                @click="toggleSort(column.key)"
               >
                 <div class="flex items-center gap-3">
-                  <FlexRender
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
+                  <span>{{ column.label }}</span>
 
                   <div class="w-4">
-                    {{ { asc: ' 🔼', desc: ' 🔽' }[header.column.getIsSorted() as string] }}
+                    {{
+                      sortSource.key === column.key
+                        ? { asc: ' 🔼', desc: ' 🔽' }[sortSource.direction]
+                        : undefined
+                    }}
                   </div>
 
-                  <template v-if="header.column.getCanFilter()">
+                  <template v-if="column.key === 'zip'">
                     <input
                       @click="(event) => event.stopPropagation()"
                       @input="(event) => updateFilter(event)"
@@ -158,11 +111,11 @@ const visibleClientsCount = computed(() => table.getRowModel().rows.length)
           <tbody>
             <tr
               class="border-b border-b-gray-200"
-              v-for="row in table.getRowModel().rows"
-              :key="row.id"
+              v-for="client in sortedFilteredClients"
+              :key="client.id"
             >
-              <td class="p-2" v-for="cell in row.getVisibleCells()" :key="cell.id">
-                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              <td class="p-2" v-for="column in columns" :key="column.key">
+                <span>{{ client[column.key] }}</span>
               </td>
             </tr>
           </tbody>
