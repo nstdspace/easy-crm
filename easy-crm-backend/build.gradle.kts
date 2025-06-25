@@ -9,7 +9,7 @@ plugins {
 
     id("com.diffplug.spotless") version "7.0.4"
 
-    id("com.google.devtools.ksp") version "2.1.21-2.0.1"
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
 }
 
 group = "de.nstdspace"
