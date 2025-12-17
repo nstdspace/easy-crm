@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    kotlin("jvm") version "2.1.21"
+    kotlin("jvm") version "2.3.0"
     kotlin("plugin.spring") version "2.1.21"
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
